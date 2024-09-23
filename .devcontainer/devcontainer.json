@@ -1,0 +1,51 @@
+{
+    "name": "Python 3 Development",
+    "image": "mcr.microsoft.com/devcontainers/python:3.10",
+    "mounts": [
+        "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
+    ],
+    "features": {
+        "python": "3.10"
+    },
+    "postCreateCommand": "bash scripts/devcontainer-setup.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.debugpy",
+                "ms-toolsai.jupyter",
+                "ms-python.pylint",
+                "nwgh.bandit",
+                "ms-python.black-formatter",
+                "foxundermoon.shell-format",
+                "njpwerner.autodocstring",
+                "wayou.vscode-todo-highlight",
+                "hediet.vscode-drawio",
+                "bierner.markdown-mermaid",
+                "DavidAnson.vscode-markdownlint"
+            ]
+        },
+        "settings": {
+            "python.pythonPath": "/usr/local/bin/python",
+            "python.languageServer": "Pylance",
+            "python.envFile": "${workspaceFolder}/.env",
+            "python.analysis.typeCheckingMode": "basic",
+            "python.analysis.diagnosticMode": "workspace",
+            "python.analysis.exclude": [],
+            "python.testing.pytestArgs": [
+                "tests"
+            ],
+            "python.testing.unittestEnabled": false,
+            "python.testing.pytestEnabled": true,
+            "[python]": {
+                "editor.defaultFormatter": "ms-python.black-formatter"
+            },
+            "editor.formatOnSave": true,
+            "files.exclude": {
+                "**/__pycache__": true,
+                "**/.pytest_cache": true
+            }
+        }
+    }
+}

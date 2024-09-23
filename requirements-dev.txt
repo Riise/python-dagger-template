@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest
+pytest-dotenv
+bandit
+pylint_secure_coding_standard

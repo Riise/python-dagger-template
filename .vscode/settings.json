@@ -1,0 +1,27 @@
+{
+    "python.languageServer": "Pylance",
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.exclude": [],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true
+    },
+    "pylint.ignorePatterns": [
+        "**/tests/*.py"
+    ],
+    "bandit.args": [
+        "-c ${workspaceFolder}/bandit.yaml"
+    ],
+    "todohighlight.isCaseSensitive": false,
+}

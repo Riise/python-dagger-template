@@ -1,0 +1,14 @@
+[MAIN]
+ignore=**/tests/*.py
+load-plugins=pylint_secure_coding_standard
+
+[MESSAGES CONTROL]
+disable=
+    typecheck, # type checking is done by Pylance
+    # missing-docstring,
+    format, # string formatting is done by Black
+    # broad-exception-caught,
+
+[MISCELLANEOUS]
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME
