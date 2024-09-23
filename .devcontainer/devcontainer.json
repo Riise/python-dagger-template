@@ -1,9 +1,9 @@
 {
     "name": "Python 3 Development",
     "image": "mcr.microsoft.com/devcontainers/python:3.10",
-    "mounts": [
-        "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
-    ],
+    // "mounts": [
+    //     "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
+    // ],
     "features": {
         "python": "3.10"
     },

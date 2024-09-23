@@ -3,3 +3,4 @@ pytest
 pytest-dotenv
 bandit
 pylint_secure_coding_standard
+dagger-io
