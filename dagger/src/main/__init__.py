@@ -1,20 +1,12 @@
-"""A generated module for PythonDaggerTemplate functions
+"""PythonDaggerTemplate functions
 
-This module has been generated via dagger init and serves as a reference to
-basic module structure as you get started with Dagger.
-
-Two functions have been pre-created. You can modify, delete, or add to them,
-as needed. They demonstrate usage of arguments and return types using simple
-echo and grep commands. The functions can be called from the dagger CLI or
-from one of the SDKs.
-
-The first line in this comment block is a short description line and the
-rest is a long description with more detail on the module's purpose or usage,
-if appropriate. All modules should have a short description.
+This file contains the Dagger functions that define the steps of the pipeline.
 """
 
 import dagger
 from dagger import dag, function, object_type
+
+PYTHON_VERSION = "3.10"
 
 # NOTE: it's recommended to move your code into other files in this package
 # and keep __init__.py for imports only, according to Python's convention.
@@ -25,19 +17,87 @@ from dagger import dag, function, object_type
 
 @object_type
 class PythonDaggerTemplate:
-    @function
-    def container_echo(self, string_arg: str) -> dagger.Container:
-        """Returns a container that echoes whatever string argument is provided"""
-        return dag.container().from_("alpine:latest").with_exec(["echo", string_arg])
+    """Dagger class"""
+
+    # @function
+    # def container_echo(self, string_arg: str) -> dagger.Container:
+    #     """Returns a container that echoes whatever string argument is provided"""
+    #     return dag.container().from_("alpine:latest").with_exec(["echo", string_arg])
+
+    # @function
+    # async def grep_dir(self, directory_arg: dagger.Directory, pattern: str) -> str:
+    #     """Returns lines that match a pattern in the files of the provided Directory"""
+    #     return await (
+    #         dag.container()
+    #         .from_("alpine:latest")
+    #         .with_mounted_directory("/mnt", directory_arg)
+    #         .with_workdir("/mnt")
+    #         .with_exec(["grep", "-R", pattern, "."])
+    #         .stdout()
+    #     )
 
     @function
-    async def grep_dir(self, directory_arg: dagger.Directory, pattern: str) -> str:
-        """Returns lines that match a pattern in the files of the provided Directory"""
-        return await (
+    def ci_container(self, prj: dagger.Directory) -> dagger.Container:
+        """Build a ready-to-use development environment"""
+
+        # create a Dagger cache volume for dependencies
+        # node_cache = dag.cache_volume("node")
+
+        return (
             dag.container()
-            .from_("alpine:latest")
-            .with_mounted_directory("/mnt", directory_arg)
-            .with_workdir("/mnt")
-            .with_exec(["grep", "-R", pattern, "."])
+            .from_(f"python:{PYTHON_VERSION}-slim")
+            .with_directory(
+                ".",
+                prj,
+                exclude=[".git", ".pytest_cache", ".devcontainer", "dagger"],
+            )
+            .with_exec(["./scripts/ci-container-setup.sh"])
+        )
+
+    @function
+    async def pylint(self, prj: dagger.Directory) -> str:
+        """Return the result of running unit tests"""
+
+        return await self.ci_container(prj).with_exec(["pylint", "src/"]).stdout()
+
+    @function
+    async def pytest(self, prj: dagger.Directory) -> str:
+        """Return the result of running unit tests"""
+
+        return await self.ci_container(prj).with_exec(["pytest", "tests/"]).stdout()
+
+    @function
+    async def bandit(self, prj: dagger.Directory) -> str:
+        """Return the result of running unit tests"""
+
+        return await self.ci_container(prj).with_exec(["bandit", "-r", "src/"]).stdout()
+
+    @function
+    async def safety(self, prj: dagger.Directory) -> str:
+        """Return the result of running Safety CLI"""
+
+        return await self.ci_container(prj).with_exec(["safety", "check"]).stdout()
+
+    @function
+    async def pip_audit(self, prj: dagger.Directory) -> str:
+        """Return the result of running pip-audit Python package known vulnerabilities scanner"""
+
+        return (
+            await self.ci_container(prj)
+            .with_exec(["pip-audit", "-r", "requirements.txt"])
             .stdout()
+        )
+
+    @function
+    async def build(self, prj: dagger.Directory) -> str:
+        """Return the result of building the project"""
+
+        return (
+            await (
+                self.ci_container(prj)
+                # call the build script
+                .with_exec(["./scripts/build.sh"])
+                # capture and return the command output
+                .stdout()
+            )
         )
