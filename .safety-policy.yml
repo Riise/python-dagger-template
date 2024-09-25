@@ -1,0 +1,5 @@
+security:
+  ignore-vulnerabilities:
+    '70612':
+      reason: "jinja2 is currently not used in this project."
+      expires: '2024-12-31'  # When to stop ignoring this vulnerability
