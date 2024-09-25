@@ -3,7 +3,9 @@
     "python.envFile": "${workspaceFolder}/.env",
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.diagnosticMode": "workspace",
-    "python.analysis.exclude": [],
+    "python.analysis.exclude": [
+        "**/dagger/sdk",
+    ],
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -18,10 +20,16 @@
         "**/.pytest_cache": true
     },
     "pylint.ignorePatterns": [
-        "**/tests/*.py"
+        "**/tests/**",
+        "**/dagger/sdk/**",
     ],
     "bandit.args": [
         "-c ${workspaceFolder}/bandit.yaml"
     ],
     "todohighlight.isCaseSensitive": false,
+    "markdownlint.config": {
+        "no-duplicate-heading": {
+            "siblings_only": true
+        }
+    },
 }
