@@ -27,4 +27,9 @@
         "-c ${workspaceFolder}/bandit.yaml"
     ],
     "todohighlight.isCaseSensitive": false,
+    "markdownlint.config": {
+        "no-duplicate-heading": {
+            "siblings_only": true
+        }
+    },
 }
