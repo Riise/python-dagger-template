@@ -34,6 +34,7 @@ class PythonDaggerTemplate:
                 prj,
                 exclude=[".git", ".pytest_cache", ".devcontainer", "dagger"],
             )
+            .with_exec(["chmod", "+x", "./scripts/ci-container-setup.sh"])
             .with_exec(["./scripts/ci-container-setup.sh"])
         )
 
