@@ -1,0 +1,77 @@
+name: CI Pipeline 2
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  linting:
+    name: Code Linting and Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Pylint
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: pylint --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+
+      - name: Bandit
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: bandit --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+
+  scanning:
+    name: Dependency Vulnerability Scanning
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Security CLI Scanning
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: security --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+
+      - name: pip-audit Scanning
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: pip-audit --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+
+  testing:
+    name: Unit Testing
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Pytest
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: pytest --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
