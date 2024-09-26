@@ -41,13 +41,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Security CLI Scanning
+      - name: Safety CLI Scanning
         uses: dagger/dagger-for-github@v6
         with:
           version: "latest"
           verb: call
           module: ./dagger/src/main
-          args: security --prj=.
+          args: safety --prj=.
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
 
       - name: pip-audit Scanning
