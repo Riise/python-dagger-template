@@ -1,4 +1,0 @@
-# bandit.yaml
-exclude_dirs: ['tests']
-skips:
-  - S101

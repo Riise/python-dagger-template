@@ -24,7 +24,7 @@
         "**/dagger/sdk/**",
     ],
     "bandit.args": [
-        "-c ${workspaceFolder}/bandit.yaml"
+        "-c ${workspaceFolder}/bandit.yml"
     ],
     "todohighlight.isCaseSensitive": false,
     "markdownlint.config": {

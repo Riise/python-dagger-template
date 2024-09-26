@@ -53,7 +53,11 @@ class PythonDaggerTemplate:
     async def bandit(self, prj: dagger.Directory) -> str:
         """Return the result of running unit tests"""
 
-        return await self.ci_container(prj).with_exec(["bandit", "-r", "src/"]).stdout()
+        return (
+            await self.ci_container(prj)
+            .with_exec(["bandit", "-c", "./bandit.yml", "-r", "./src/"])
+            .stdout()
+        )
 
     @function
     async def safety(self, prj: dagger.Directory) -> str:

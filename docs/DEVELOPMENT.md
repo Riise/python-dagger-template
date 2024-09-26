@@ -51,8 +51,6 @@ The project structure is as follows:
 ├── src/                       # Source code
 ├── tests/                     # Unit tests
 ├── docs/                      # Main documentation
-├── .pylintrc                  # Pylint configuration
-├── bandit.yaml                # Bandit configuration
 ├── requirements.txt           # Base pip installs (production only uses this)
 ├── requirements-dev.txt       # Development pip installs
 ├── requirements-ci.txt        # CI pip installs
@@ -63,22 +61,56 @@ The project structure is as follows:
 
 Add application/production dependencies to `requirements.txt` and development tool dependencies to `requirements-dev.txt`. If you need to install additional dependencies for CI, add them to `requirements-ci.txt`.
 
-## Linting and Security Scanning
+## Linting, Code Security Scanning, and Dependency Vulnerability Scanning
 
-The project uses [Bandit](https://github.com/PyCQA/bandit) and [Pylint Secure Coding Standard](https://github.com/Takishima/pylint-secure-coding-standard) to scan for security vulnerabilities and code quality issues. The configuration files are located in the root of the project:
+The project uses [Bandit](https://github.com/PyCQA/bandit) and [Pylint Secure Coding Standard](https://github.com/Takishima/pylint-secure-coding-standard) to scan for security vulnerabilities and code quality issues.
+
+Both tools have VS Code extensions installed for real-time scanning, but they can also be run from the command line.
+
+The project uses [Safety](https://safetycli.com/) to scan for Python dependencies with known security vulnerabilities. Alternatively [pip-audit](https://pypi.org/project/pip-audit/) can be used as Safety has a commercial version.
+
+The configuration files are located in the root of the project:
 
 - [`.pylintrc`](../.pylintrc): Pylint configuration.
-- [`bandit.yaml`](../bandit.yaml): Bandit configuration.
+- [`bandit.yml`](../bandit.yml): Bandit configuration.
+- [`.safety-policy.yml`](../.safety-policy.yml): Safety configuration.
 
-To run the Pylint linting and security scan, use the following command:
+### Running Linters and Scanners from the Command Line
 
-```bash
-pylint ./src/
-```
-
-To run the Bandit security scan, use the following command:
+To run Pylint with Secure Coding Standard:
 
 ```bash
-bandit -r ./src/                 # only the source code 
-bandit -c ./bandit.yaml -r .     # the entire project and using the Bandit config file
+pylint src
 ```
+
+To run Bandit security scanner:
+
+```bash
+bandit -r src               # only source code folder
+bandit -c bandit.yml -r .   # entire project and using a Bandit config file
+```
+
+To run Safety dependency vulnerability scanner:
+
+```bash
+safety check
+```
+
+To run pip-audit dependency vulnerability scanner:
+
+```bash
+pip-audit -r requirements.txt
+```
+
+## The use of FIXME and TODO
+
+The project uses the [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight) extension to highlight `TODO`, and `FIXME` comments and a CI check should be setup to fail if any FIXMEs are present in a `main` branch merge request. Pylint checks for "fixme" comments.
+
+The convention is to use `FIXME` for tasks that need to be fixed before the PR can be approved and merged. See it as notes to yourself about incomplete code or security issues that need to be addressed.
+
+`TODO` is for tasks that need to be done sometime in the future. It can be used for improvements, refactoring, or other tasks that are not blocking the PR.
+
+Note! It should be a comment line starting with TODO or FIXME followed by a colon and a space.
+
+Example:
+<pre># FIXME&colon; Add input validation.</pre>
