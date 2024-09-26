@@ -1,0 +1,25 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Lint and Scan
+        uses: dagger/dagger-for-github@v6
+        with:
+          version: "latest"
+          verb: call
+          module: ./dagger/src/main
+          args: ci --prj=.
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
