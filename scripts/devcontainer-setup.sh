@@ -6,6 +6,6 @@ if [ -f "requirements-dev.txt" ]; then
 fi
 
 # Set the workspace directory as a Git safe directory
-git config --global --add safe.directory /workspaces/python-template
+git config --global --add safe.directory /workspaces/python-dagger-template
 
 echo "devcontainer-setup.sh complete."
