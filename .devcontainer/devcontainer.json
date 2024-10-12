@@ -23,8 +23,7 @@
                 "wayou.vscode-todo-highlight",
                 "hediet.vscode-drawio",
                 "bierner.markdown-mermaid",
-                "DavidAnson.vscode-markdownlint",
-                "Continue.continue"
+                "DavidAnson.vscode-markdownlint"
             ]
         },
         "settings": {
