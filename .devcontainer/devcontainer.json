@@ -1,11 +1,14 @@
 {
     "name": "Python & Dagger Template",
     "image": "mcr.microsoft.com/devcontainers/python:3.12",
+    // If a mounted data folder is needed, uncomment the following lines.
     // "mounts": [
     //     "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
     // ],
     "features": {
         "python": "3.12"
+        // If Docker is needed (for local Dagger), uncomment the following line.
+        // "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
     },
     "postCreateCommand": "bash scripts/devcontainer-setup.sh",
     "customizations": {
