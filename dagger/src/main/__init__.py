@@ -1,4 +1,4 @@
-"""PythonDaggerTemplate Dagger Module
+"""Dagger Module
 """
 
-from .python_dagger_template import PythonDaggerTemplate
+from .dagger_main import DaggerMain
