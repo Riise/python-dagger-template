@@ -7,6 +7,7 @@ This guide will help you set up your development environment on Windows installi
 - Docker Desktop
 - Git for Windows
 - VS Code
+- Dagger
 
 ## Prerequisites
 
@@ -44,7 +45,7 @@ First, install Chocolatey, a package manager for Windows.
     wsl --install -d Ubuntu
     ```
 
-## Step 3: Install Docker Desktop
+## Step 3a: Install Docker Desktop [Option A]
 
 1. Install Docker Desktop using Chocolatey:
 
@@ -58,6 +59,22 @@ First, install Chocolatey, a package manager for Windows.
 
     - Open Docker Desktop settings.
     - Go to the "General" tab and check "Use the WSL 2 based engine".
+
+## Step 3b: Install Rancher Desktop [Option B]
+
+1. Install Rancher Desktop using Chocolatey:
+
+    ```powershell
+    choco install rancher-desktop
+    ```
+
+2. After installation, start Rancher Desktop from the Start menu.
+
+3. Ensure Rancher is configured to use `dockerd`:
+
+    - Go to Preferences.
+    - Select Container Engine.
+    - Choose `dockerd (moby)` as the container engine.
 
 ## Step 4: Install Git for Windows
 
@@ -99,6 +116,20 @@ First, install Chocolatey, a package manager for Windows.
 
     ```powershell
     code --version
+    ```
+
+## Step 6: Dagger CLI
+
+1. Install Dagger CLI using Chocolatey:
+
+    ```powershell
+    choco install dagger
+    ```
+
+2. Verify the installation:
+
+    ```powershell
+    dagger version
     ```
 
 You have now successfully set up your development environment on Windows using PowerShell and Chocolatey.

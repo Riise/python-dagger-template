@@ -15,9 +15,10 @@ This document provides a reference for development practices and tools used in t
 For development on Windows, the following pre-requisites are required:
 
 - [Windows Subsystem for Linux (WSL) 2](https://docs.microsoft.com/en-us/windows/wsl/install)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) or [Rancher Desktop](https://rancherdesktop.io/)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Git for Windows](https://git-scm.com/download/win)
+- [Dagger CLI](https://dagger.io/dagger-engine)
 
 See local Windows installation guide here: [docs/dev-env-setup.md](./dev-env-setup.md).
 
@@ -47,6 +48,7 @@ The project structure is as follows:
 ├── .vscode/                   # Shared VS Code workspace configuration
 ├── .devcontainer/             # Development container configuration
 ├── scripts/                   # CLI scripts
+│   ├── ci-container-setup.sh  # Dagger CI container setup (ref. by Dagger)
 │   └── devcontainer-setup.sh  # Development container setup (ref. in devcontainer.json)
 ├── src/                       # Source code
 ├── tests/                     # Unit tests
@@ -61,7 +63,7 @@ The project structure is as follows:
 
 Add application/production dependencies to `requirements.txt` and development tool dependencies to `requirements-dev.txt`. If you need to install additional dependencies for CI, add them to `requirements-ci.txt`.
 
-## Linting, Code Security Scanning, and Dependency Vulnerability Scanning
+## CI: Linting, Code Security Scanning, and Dependency Vulnerability Scanning
 
 The project uses [Bandit](https://github.com/PyCQA/bandit) and [Pylint Secure Coding Standard](https://github.com/Takishima/pylint-secure-coding-standard) to scan for security vulnerabilities and code quality issues.
 
@@ -75,7 +77,41 @@ The configuration files are located in the root of the project:
 - [`bandit.yml`](../bandit.yml): Bandit configuration.
 - [`.safety-policy.yml`](../.safety-policy.yml): Safety configuration.
 
-### Running Linters and Scanners from the Command Line
+### Running CI Locally
+
+[Dagger.io](https://dagger.io/) is used as CI/CD engine and the CLI must be invoked from the host OS and not from within the development container.
+
+If you already have created and configured a [Dagger Cloud](https://dagger.io/cloud) user you can log in from the current shell to log and view Dagger traces online.
+
+```powershell
+dagger login
+```
+
+To run the full CI locally run:
+
+```powershell
+dagger call ci --prj .
+```
+
+To run linting, code scanning, or tests:
+
+```powershell
+dagger call lint --prj .        # pylint + bandit
+dagger call scan --prj .        # safety + pip-audit
+dagger call test --prj .        # pytest
+```
+
+To run individual CI steps run one of the following:
+
+```powershell
+dagger call pylint --prj .      # Code linting
+dagger call bandit --prj .      # Code security scanning
+dagger call safety --prj .      # Dependency vulnerability scanning (Safety)
+dagger call pip-audit --prj .   # Dependency vulnerability scanning (pip-audit)
+dagger call pytest --prj .      # Unit testing
+```
+
+### Running Linters and Scanners from the Command Line (outside Dagger)
 
 To run Pylint with Secure Coding Standard:
 
