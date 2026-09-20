@@ -5,6 +5,10 @@
     // "mounts": [
     //     "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
     // ],
+    // If Claude Code's login session/settings/memory should survive a container rebuild, uncomment the following lines.
+    // "mounts": [
+    //     "source=claude-code-config,target=/home/vscode/.claude,type=volume"
+    // ],
     "features": {
         "python": "3.14"
         // If Docker is needed (for local Dagger), uncomment the following line.

@@ -132,6 +132,10 @@ ENV/
 env.bak/
 venv.bak/
 
+# Local Claude Code permissions and personal instructions
+.claude/settings.local.json
+CLAUDE.local.md
+
 # Spyder project settings
 .spyderproject
 .spyproject
