@@ -28,6 +28,7 @@ class DaggerMain:
             dag.container()
             .from_(CONTAINER)
             .with_file("/usr/local/bin/uv", uv_binary, permissions=0o755)
+            .with_workdir("/workspace")
             .with_directory(
                 ".",
                 prj,
