@@ -6,7 +6,7 @@ This file contains the Dagger functions that define the steps of the pipeline.
 import dagger
 from dagger import dag, function, object_type
 
-CONTAINER = "python:3.12-slim"
+CONTAINER = "python:3.14-slim"
 
 
 @object_type
@@ -20,13 +20,19 @@ class DaggerMain:
         # create a Dagger cache volume for dependencies
         # node_cache = dag.cache_volume("node")
 
+        # python:3.14-slim has no curl, so fetch the uv binary directly from its
+        # official image instead of running the network-dependent install script.
+        uv_binary = dag.container().from_("ghcr.io/astral-sh/uv:latest").file("/uv")
+
         return (
             dag.container()
             .from_(CONTAINER)
+            .with_file("/usr/local/bin/uv", uv_binary, permissions=0o755)
+            .with_workdir("/workspace")
             .with_directory(
                 ".",
                 prj,
-                exclude=[".git", ".pytest_cache", ".devcontainer", "dagger"],
+                exclude=[".git", ".pytest_cache", ".devcontainer", "dagger", ".venv"],
             )
             .with_exec(["chmod", "+x", "./scripts/ci-container-setup.sh"])
             .with_exec(["./scripts/ci-container-setup.sh"])
@@ -36,7 +42,11 @@ class DaggerMain:
     async def pylint(self, prj: dagger.Directory) -> str:
         """Return the result of running unit tests"""
 
-        return await self.ci_container(prj).with_exec(["pylint", "src/"]).stdout()
+        return (
+            await self.ci_container(prj)
+            .with_exec(["uv", "run", "--no-sync", "pylint", "src/"])
+            .stdout()
+        )
 
     @function
     async def bandit(self, prj: dagger.Directory) -> str:
@@ -44,15 +54,9 @@ class DaggerMain:
 
         return (
             await self.ci_container(prj)
-            .with_exec(["bandit", "-c", "./bandit.yml", "-r", "./src/"])
+            .with_exec(["uv", "run", "--no-sync", "bandit", "-c", "./bandit.yml", "-r", "./src/"])
             .stdout()
         )
-
-    @function
-    async def safety(self, prj: dagger.Directory) -> str:
-        """Return the result of running Safety CLI"""
-
-        return await self.ci_container(prj).with_exec(["safety", "check"]).stdout()
 
     @function
     async def pip_audit(self, prj: dagger.Directory) -> str:
@@ -60,7 +64,7 @@ class DaggerMain:
 
         return (
             await self.ci_container(prj)
-            .with_exec(["pip-audit", "-r", "requirements.txt"])
+            .with_exec(["uv", "run", "--no-sync", "pip-audit", "--path", ".venv"])
             .stdout()
         )
 
@@ -68,7 +72,11 @@ class DaggerMain:
     async def pytest(self, prj: dagger.Directory) -> str:
         """Return the result of running unit tests"""
 
-        return await self.ci_container(prj).with_exec(["pytest", "tests/"]).stdout()
+        return (
+            await self.ci_container(prj)
+            .with_exec(["uv", "run", "--no-sync", "pytest", "tests/"])
+            .stdout()
+        )
 
     # region --- Pipelines & Composite Steps --------------------------------------------------
 
@@ -85,8 +93,7 @@ class DaggerMain:
     async def scan(self, prj: dagger.Directory) -> str:
         """Dependency vulnerability scanning"""
 
-        output = await self.safety(prj)
-        output += await self.pip_audit(prj)
+        output = await self.pip_audit(prj)
 
         return output
 
@@ -106,7 +113,6 @@ class DaggerMain:
         output += await self.bandit(prj)
 
         output += await self.pip_audit(prj)
-        output += await self.safety(prj)
 
         output += await self.pytest(prj)
 

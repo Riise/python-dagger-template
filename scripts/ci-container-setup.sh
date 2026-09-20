@@ -1,15 +1,9 @@
 #!/bin/bash
+set -euo pipefail
 
-# Upgrade pip
-python -m pip install --upgrade pip
-
-# Safety check upgrades (aparrently installed on base image)
-pip install --upgrade setuptools
-pip install --upgrade jinja2
-
-# pip install packages
-if [ -f "requirements-ci.txt" ]; then
-    pip install -r requirements-ci.txt
-fi
+# uv is already copied into the container by ci_container() (see dagger_main.py).
+# Create the project's uv-managed virtual environment and install CI dependencies only
+# (--only-group is required since uv otherwise also syncs the "dev" default group)
+uv sync --only-group ci
 
 echo "ci-container-setup.sh complete."

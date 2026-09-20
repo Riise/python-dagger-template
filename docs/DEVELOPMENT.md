@@ -5,7 +5,7 @@ This document provides a reference for development practices and tools used in t
 ## Assumption & Pre-requisites
 
 - The project is developed using Visual Studio Code and the development container.
-- The development container is configured to use Python 3.12.
+- The development container is configured to use Python 3.14.
 - Windows was used as the development environment, but development can happen on other operating systems.
 - Linux was used as the development container.
 - Production environment is assumed to be Linux-based.
@@ -35,9 +35,9 @@ To get started with the project, follow these steps:
 
 The project uses a development container to ensure a consistent development environment across all developers. The development container is defined in `.devcontainer/devcontainer.json` and uses the following configuration:
 
-- It is from a Python 3.12 base image.
+- It is from a Python 3.14 base image.
 - Recommended VS Code extensions will be installed.
-- `requirements-dev.txt` (incl. `requirements.txt`) project dependencies will be installed.
+- Project dependencies are installed via [uv](https://docs.astral.sh/uv/) (`uv sync --group dev`).
 
 ## Project Structure
 
@@ -53,15 +53,22 @@ The project structure is as follows:
 ├── src/                       # Source code
 ├── tests/                     # Unit tests
 ├── docs/                      # Main documentation
-├── requirements.txt           # Base pip installs (production only uses this)
-├── requirements-dev.txt       # Development pip installs
-├── requirements-ci.txt        # CI pip installs
+├── pyproject.toml             # Project metadata and dependency groups
+├── uv.lock                    # Locked, reproducible dependency versions
 └── ...
 ```
 
 ## Python Dependency Management
 
-Add application/production dependencies to `requirements.txt` and development tool dependencies to `requirements-dev.txt`. If you need to install additional dependencies for CI, add them to `requirements-ci.txt`.
+The project uses [uv](https://docs.astral.sh/uv/) for Python packaging and dependency management.
+
+- `uv add <package>` adds a production dependency.
+- `uv add --group ci <package>` adds a tool dependency needed to lint, scan, or test the code (used by both local dev and the Dagger CI container).
+- `uv add --group dev <package>` adds a dependency needed only for local development (e.g. `dagger-io`, for IDE support while editing the Dagger module).
+- `uv sync --group dev` refreshes your local environment with everything above (the `dev` group includes the `ci` group plus local-only extras).
+- `uv run <command>` runs a command inside the project's managed environment.
+
+The Dagger CI container installs only the `ci` group, via `uv sync --only-group ci` (plain `--group ci` isn't enough, since uv also syncs the `dev` default group unless told otherwise); it deliberately excludes `dagger-io` since the CI container doesn't need it.
 
 ## CI: Linting, Code Security Scanning, and Dependency Vulnerability Scanning
 
@@ -69,13 +76,12 @@ The project uses [Bandit](https://github.com/PyCQA/bandit) and [Pylint Secure Co
 
 Both tools have VS Code extensions installed for real-time scanning, but they can also be run from the command line.
 
-The project uses [Safety](https://safetycli.com/) to scan for Python dependencies with known security vulnerabilities. Alternatively [pip-audit](https://pypi.org/project/pip-audit/) can be used as Safety has a commercial version.
+The project uses [pip-audit](https://pypi.org/project/pip-audit/) to scan for Python dependencies with known security vulnerabilities.
 
 The configuration files are located in the root of the project:
 
 - [`.pylintrc`](../.pylintrc): Pylint configuration.
 - [`bandit.yml`](../bandit.yml): Bandit configuration.
-- [`.safety-policy.yml`](../.safety-policy.yml): Safety configuration.
 
 ### Running CI Locally
 
@@ -97,7 +103,7 @@ To run linting, code scanning, or tests:
 
 ```powershell
 dagger call lint --prj .        # pylint + bandit
-dagger call scan --prj .        # safety + pip-audit
+dagger call scan --prj .        # pip-audit
 dagger call test --prj .        # pytest
 ```
 
@@ -106,7 +112,6 @@ To run individual CI steps run one of the following:
 ```powershell
 dagger call pylint --prj .      # Code linting
 dagger call bandit --prj .      # Code security scanning
-dagger call safety --prj .      # Dependency vulnerability scanning (Safety)
 dagger call pip-audit --prj .   # Dependency vulnerability scanning (pip-audit)
 dagger call pytest --prj .      # Unit testing
 ```
@@ -126,16 +131,10 @@ bandit -r src               # only source code folder
 bandit -c bandit.yml -r .   # entire project and using a Bandit config file
 ```
 
-To run Safety dependency vulnerability scanner:
-
-```bash
-safety check
-```
-
 To run pip-audit dependency vulnerability scanner:
 
 ```bash
-pip-audit -r requirements.txt
+uv run pip-audit --path .venv
 ```
 
 ## The use of FIXME and TODO
