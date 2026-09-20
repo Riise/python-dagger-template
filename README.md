@@ -11,11 +11,9 @@ The project contains the following elements:
 - Pytest configuration.
 - Code formatter, type checker, and linter configuration.
 - Python code security scanner configuration ([Bandit](https://github.com/PyCQA/bandit) and [Pylint Secure Coding Standard](https://github.com/Takishima/pylint-secure-coding-standard)).
-- Dependency vulnerability scanning ([Safety](https://safetycli.com/) or [pip-audit](https://pypi.org/project/pip-audit/)).
+- Dependency vulnerability scanning ([pip-audit](https://pypi.org/project/pip-audit/)).
 - Dagger CI pipeline running the above.
 - GitHub workflows running the Dagger CI pipeline.
-
-_Only one of the dependency vulnerability scanners is needed and the other can be removed._
 
 To get started see [Development Environment Setup](./docs/dev-env-setup.md) and [Development Guide](./docs/DEVELOPMENT.md).
 

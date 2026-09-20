@@ -10,7 +10,6 @@
         "njpwerner.autodocstring",
         "wayou.vscode-todo-highlight",
         "hediet.vscode-drawio",
-        "bierner.markdown-mermaid",
-        "DavidAnson.vscode-markdownlint"
+        "bierner.markdown-mermaid"
     ]
 }

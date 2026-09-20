@@ -1,14 +1,17 @@
 {
     "name": "Python & Dagger Template",
-    "image": "mcr.microsoft.com/devcontainers/python:3.12",
+    "image": "mcr.microsoft.com/devcontainers/python:3.14",
     // If a mounted data folder is needed, uncomment the following lines.
     // "mounts": [
     //     "source=${localEnv:HOME}/devdata,target=/devdata,type=bind,consistency=delegated"
     // ],
     "features": {
-        "python": "3.12"
+        "python": "3.14"
         // If Docker is needed (for local Dagger), uncomment the following line.
         // "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    },
+    "remoteEnv": {
+        "PATH": "${containerEnv:HOME}/.local/bin:${containerEnv:PATH}"
     },
     "postCreateCommand": "bash scripts/devcontainer-setup.sh",
     "customizations": {
@@ -25,12 +28,11 @@
                 "njpwerner.autodocstring",
                 "wayou.vscode-todo-highlight",
                 "hediet.vscode-drawio",
-                "bierner.markdown-mermaid",
-                "DavidAnson.vscode-markdownlint"
+                "bierner.markdown-mermaid"
             ]
         },
         "settings": {
-            "python.pythonPath": "/usr/local/bin/python",
+            "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
             "python.languageServer": "Pylance",
             "python.envFile": "${workspaceFolder}/.env",
             "python.analysis.typeCheckingMode": "basic",
