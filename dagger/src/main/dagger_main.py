@@ -20,9 +20,14 @@ class DaggerMain:
         # create a Dagger cache volume for dependencies
         # node_cache = dag.cache_volume("node")
 
+        # python:3.14-slim has no curl, so fetch the uv binary directly from its
+        # official image instead of running the network-dependent install script.
+        uv_binary = dag.container().from_("ghcr.io/astral-sh/uv:latest").file("/uv")
+
         return (
             dag.container()
             .from_(CONTAINER)
+            .with_file("/usr/local/bin/uv", uv_binary, permissions=0o755)
             .with_directory(
                 ".",
                 prj,
@@ -30,7 +35,6 @@ class DaggerMain:
             )
             .with_exec(["chmod", "+x", "./scripts/ci-container-setup.sh"])
             .with_exec(["./scripts/ci-container-setup.sh"])
-            .with_env_variable("PATH", "/root/.local/bin:$PATH", expand=True)
         )
 
     @function

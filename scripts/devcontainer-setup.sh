@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Install uv (Python package/dependency manager) if not already present
 if ! command -v uv >/dev/null 2>&1; then
