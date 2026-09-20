@@ -134,7 +134,7 @@ bandit -c bandit.yml -r .   # entire project and using a Bandit config file
 To run pip-audit dependency vulnerability scanner:
 
 ```bash
-pip-audit --path .venv
+uv run pip-audit --path .venv
 ```
 
 ## The use of FIXME and TODO
