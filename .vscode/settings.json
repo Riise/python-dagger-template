@@ -5,8 +5,12 @@
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*",
         "**/dagger/sdk",
     ],
+    "python.analysis.excludeLibraryDiagnostics": true,
     "python.testing.pytestArgs": [
         "tests"
     ],
